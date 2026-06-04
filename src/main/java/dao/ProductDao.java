@@ -84,6 +84,37 @@ public class ProductDao {
         return list;
     }
 
+    public List<Product> searchByPriceRange(double min, double max) throws SQLException {
+        List<Product> list = new ArrayList<>();
+        String sql = "SELECT * FROM product WHERE price >= ? AND price <= ? ORDER BY id ASC";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setDouble(1, min);
+            stmt.setDouble(2, max);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    list.add(mapProduct(rs));
+                }
+            }
+        }
+        return list;
+    }
+
+    public List<Product> searchByNameAndStock(String nameKeyword) throws SQLException {
+        List<Product> list = new ArrayList<>();
+        String sql = "SELECT * FROM product WHERE name ILIKE ? AND stock > 0 ORDER BY id ASC";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, "%" + nameKeyword + "%");
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    list.add(mapProduct(rs));
+                }
+            }
+        }
+        return list;
+    }
+
     private Product mapProduct(ResultSet rs) throws SQLException {
         Product p = new Product();
         p.setId(rs.getInt("id"));

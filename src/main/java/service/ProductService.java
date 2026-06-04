@@ -14,6 +14,8 @@ public class ProductService {
     public boolean update(Product p) throws SQLException { validate(p); return productDao.update(p); }
     public boolean delete(int id) throws SQLException { return productDao.delete(id); }
     public List<Product> searchByBrand(String brand) throws SQLException { return productDao.searchByBrand(brand); }
+    public List<Product> searchByPriceRange(double min, double max) throws SQLException { return productDao.searchByPriceRange(min, max); }
+    public List<Product> searchByNameAndStock(String kw) throws SQLException { return productDao.searchByNameAndStock(kw); }
 
     private void validate(Product p) {
         if (p.getName() == null || p.getName().isEmpty()) throw new IllegalArgumentException("Tên sản phẩm không được để trống!");

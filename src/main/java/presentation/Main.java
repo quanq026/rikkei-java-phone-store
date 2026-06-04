@@ -1,6 +1,8 @@
 package presentation;
 
+import model.Customer;
 import model.Product;
+import service.CustomerService;
 import service.ProductService;
 import java.util.List;
 import java.util.Scanner;
@@ -8,6 +10,7 @@ import java.util.Scanner;
 public class Main {
     private static final Scanner scanner = new Scanner(System.in);
     private static final ProductService productService = new ProductService();
+    private static final CustomerService customerService = new CustomerService();
 
     public static void main(String[] args) {
         while (true) {
@@ -15,7 +18,8 @@ public class Main {
             System.out.println("      HỆ THỐNG QUẢN LÝ CỬA HÀNG ĐIỆN THOẠI    ");
             System.out.println("=============================================");
             System.out.println("1. Quản lý sản phẩm điện thoại");
-            System.out.println("2. Thoát");
+            System.out.println("2. Quản lý khách hàng");
+            System.out.println("3. Thoát");
             System.out.println("=============================================");
             System.out.print("Nhập lựa chọn của bạn: ");
             String choice = scanner.nextLine().trim();
@@ -25,6 +29,9 @@ public class Main {
                     showProductMenu();
                     break;
                 case "2":
+                    showCustomerMenu();
+                    break;
+                case "3":
                     System.out.println("Cảm ơn bạn đã sử dụng chương trình. Tạm biệt!");
                     System.exit(0);
                     break;
@@ -42,7 +49,9 @@ public class Main {
             System.out.println("3. Cập nhật thông tin sản phẩm");
             System.out.println("4. Xóa sản phẩm");
             System.out.println("5. Tìm kiếm sản phẩm theo Brand");
-            System.out.println("6. Quay lại Menu chính");
+            System.out.println("6. Tìm kiếm sản phẩm theo Khoảng giá");
+            System.out.println("7. Tìm kiếm sản phẩm theo Tên & Có sẵn");
+            System.out.println("8. Quay lại Menu chính");
             System.out.print("Nhập lựa chọn của bạn: ");
             String choice = scanner.nextLine().trim();
 
@@ -120,12 +129,59 @@ public class Main {
                         productService.searchByBrand(searchBrand).forEach(System.out::println);
                         break;
                     case "6":
+                        System.out.print("Nhập giá tối thiểu: ");
+                        double min = Double.parseDouble(scanner.nextLine().trim());
+                        System.out.print("Nhập giá tối đa: ");
+                        double max = Double.parseDouble(scanner.nextLine().trim());
+                        productService.searchByPriceRange(min, max).forEach(System.out::println);
+                        break;
+                    case "7":
+                        System.out.print("Nhập từ khóa tên sản phẩm (chỉ hiển thị hàng có sẵn): ");
+                        String searchName = scanner.nextLine().trim();
+                        productService.searchByNameAndStock(searchName).forEach(System.out::println);
+                        break;
+                    case "8":
                         return;
                     default:
                         System.out.println("Lựa chọn không hợp lệ.");
                 }
             } catch (Exception e) {
                 System.out.println("Lỗi thao tác: " + e.getMessage());
+            }
+        }
+    }
+
+    private static void showCustomerMenu() {
+        while (true) {
+            System.out.println("\n---- QUẢN LÝ KHÁCH HÀNG ----");
+            System.out.println("1. Thêm mới khách hàng (Gọi Stored Procedure)");
+            System.out.println("2. Quay lại Menu chính");
+            System.out.print("Nhập lựa chọn của bạn: ");
+            String choice = scanner.nextLine().trim();
+
+            try {
+                switch (choice) {
+                    case "1":
+                        Customer c = new Customer();
+                        System.out.print("Nhập tên khách hàng: ");
+                        c.setName(scanner.nextLine().trim());
+                        System.out.print("Nhập số điện thoại: ");
+                        c.setPhone(scanner.nextLine().trim());
+                        System.out.print("Nhập địa chỉ email: ");
+                        c.setEmail(scanner.nextLine().trim());
+                        System.out.print("Nhập địa chỉ: ");
+                        c.setAddress(scanner.nextLine().trim());
+
+                        customerService.add(c);
+                        System.out.println("Đã thêm khách hàng thành công qua Stored Procedure!");
+                        break;
+                    case "2":
+                        return;
+                    default:
+                        System.out.println("Lựa chọn không hợp lệ.");
+                }
+            } catch (Exception e) {
+                System.out.println("Lỗi: " + e.getMessage());
             }
         }
     }
